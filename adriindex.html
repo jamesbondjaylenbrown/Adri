@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adri's Sweet Treat Recommender 🍰</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Lato', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 30%, #f48fb1 60%, #fce4ec 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 12s ease infinite;
+      padding: 2rem 1rem 4rem;
+    }
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .container { max-width: 860px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 2.5rem; }
+    header .crown { font-size: 2.8rem; display: block; margin-bottom: 0.25rem; }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      color: #880e4f;
+      text-shadow: 0 2px 8px rgba(136,14,79,.18);
+      line-height: 1.2;
+    }
+    header p { margin-top: 0.6rem; color: #ad1457; font-size: 1.05rem; font-weight: 300; }
+    .card {
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 1.6rem 1.8rem;
+      margin-bottom: 1.4rem;
+      box-shadow: 0 4px 24px rgba(136,14,79,0.12);
+      border: 1.5px solid rgba(244,143,177,0.5);
+    }
+    .card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      color: #880e4f;
+      margin-bottom: 1rem;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+    .chip {
+      cursor: pointer;
+      padding: 0.45rem 1rem;
+      border-radius: 50px;
+      border: 2px solid #f48fb1;
+      background: transparent;
+      color: #880e4f;
+      font-size: 0.92rem;
+      font-family: 'Lato', sans-serif;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .chip:hover {
+      background: #fce4ec;
+      border-color: #e91e8c;
+      transform: translateY(-2px);
+      box-shadow: 0 3px 10px rgba(233,30,140,0.2);
+    }
+    .chip.selected {
+      background: linear-gradient(135deg, #e91e8c, #f06292);
+      border-color: #c2185b;
+      color: #fff;
+      box-shadow: 0 3px 12px rgba(233,30,140,0.35);
+      transform: translateY(-2px);
+    }
+    .btn-recommend {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #e91e8c, #c2185b);
+      color: #fff;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 18px rgba(194,24,91,0.35);
+      margin-top: 0.6rem;
+    }
+    .btn-recommend:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(194,24,91,0.45);
+    }
+    #result-card { display: none; animation: fadeUp 0.5s ease; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .treat-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: #880e4f;
+      margin-bottom: 0.6rem;
+    }
+    .treat-desc { font-size: 1.05rem; color: #4a148c; line-height: 1.75; }
+    .treat-tags { margin-top: 0.8rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag {
+      background: #fce4ec;
+      color: #c2185b;
+      border-radius: 50px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border: 1px solid #f8bbd0;
+    }
+    .error-msg {
+      display: none;
+      color: #b71c1c;
+      background: #ffebee;
+      border: 1.5px solid #ef9a9a;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      margin-top: 0.75rem;
+      font-size: 0.95rem;
+    }
+    .error-msg.show { display: block; }
+    .hint { text-align: center; font-size: 0.82rem; color: #ad1457; margin-top: -0.6rem; margin-bottom: 1rem; font-style: italic; }
+    .dots { text-align: center; font-size: 1.2rem; letter-spacing: 6px; margin: 0.2rem 0 1.2rem; opacity: 0.45; }
+    footer { text-align: center; margin-top: 2rem; color: #ad1457; font-size: 0.85rem; opacity: 0.75; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <span class="crown">👑🌸</span>
+    <h1>Adri's Sweet Treat Recommender</h1>
+    <p>Tell me what you're craving and I'll find your perfect indulgence ✨</p>
+  </header>
+
+  <div class="card">
+    <h2>🍰 What type of sweet are you craving?</h2>
+    <div class="chips">
+      <button class="chip" data-group="type" data-value="cookie">🍪 Cookie</button>
+      <button class="chip" data-group="type" data-value="tart">🥧 Tart</button>
+      <button class="chip" data-group="type" data-value="cake">🎂 Cake</button>
+      <button class="chip" data-group="type" data-value="cupcake">🧁 Cupcake</button>
+      <button class="chip" data-group="type" data-value="croissant">🥐 Croissant</button>
+      <button class="chip" data-group="type" data-value="donut">🍩 Donut</button>
+      <button class="chip" data-group="type" data-value="brownie">🍫 Brownie</button>
+      <button class="chip" data-group="type" data-value="macaron">🌸 Macaron</button>
+      <button class="chip" data-group="type" data-value="eclair">⚡ Éclair</button>
+      <button class="chip" data-group="type" data-value="custard">🍮 Flan / Custard</button>
+      <button class="chip" data-group="type" data-value="icecream">🍨 Ice Cream</button>
+      <button class="chip" data-group="type" data-value="candy">🍬 Candy / Confection</button>
+      <button class="chip" data-group="type" data-value="pastry">🥮 Pastry</button>
+      <button class="chip" data-group="type" data-value="pudding">🍯 Pudding</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌍 Any country you're vibing with?</h2>
+    <div class="chips">
+      <button class="chip" data-group="country" data-value="france">🇫🇷 France</button>
+      <button class="chip" data-group="country" data-value="haiti">🇭🇹 Haiti</button>
+      <button class="chip" data-group="country" data-value="germany">🇩🇪 Germany</button>
+      <button class="chip" data-group="country" data-value="italy">🇮🇹 Italy</button>
+      <button class="chip" data-group="country" data-value="japan">🇯🇵 Japan</button>
+      <button class="chip" data-group="country" data-value="mexico">🇲🇽 Mexico</button>
+      <button class="chip" data-group="country" data-value="usa">🇺🇸 USA</button>
+      <button class="chip" data-group="country" data-value="belgium">🇧🇪 Belgium</button>
+      <button class="chip" data-group="country" data-value="austria">🇦🇹 Austria</button>
+      <button class="chip" data-group="country" data-value="greece">🇬🇷 Greece</button>
+      <button class="chip" data-group="country" data-value="morocco">🇲🇦 Morocco</button>
+      <button class="chip" data-group="country" data-value="brazil">🇧🇷 Brazil</button>
+      <button class="chip" data-group="country" data-value="india">🇮🇳 India</button>
+      <button class="chip" data-group="country" data-value="portugal">🇵🇹 Portugal</button>
+      <button class="chip" data-group="country" data-value="southkorea">🇰🇷 South Korea</button>
+      <button class="chip" data-group="country" data-value="turkey">🇹🇷 Turkey</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💖 What flavors are calling your name?</h2>
+    <div class="chips">
+      <button class="chip" data-group="flavor" data-value="buttery">🧈 Buttery</button>
+      <button class="chip" data-group="flavor" data-value="sweet">🍬 Sweet</button>
+      <button class="chip" data-group="flavor" data-value="tart">🍋 Tart / Tangy</button>
+      <button class="chip" data-group="flavor" data-value="chocolatey">🍫 Chocolatey</button>
+      <button class="chip" data-group="flavor" data-value="fruity">🍓 Fruity</button>
+      <button class="chip" data-group="flavor" data-value="nutty">🥜 Nutty</button>
+      <button class="chip" data-group="flavor" data-value="creamy">🥛 Creamy</button>
+      <button class="chip" data-group="flavor" data-value="spiced">🌶️ Spiced / Warm</button>
+      <button class="chip" data-group="flavor" data-value="floral">🌹 Floral</button>
+      <button class="chip" data-group="flavor" data-value="caramel">🍯 Caramel</button>
+      <button class="chip" data-group="flavor" data-value="vanilla">🌿 Vanilla</button>
+      <button class="chip" data-group="flavor" data-value="coconut">🥥 Coconut</button>
+    </div>
+  </div>
+
+  <p class="hint">✨ Mix &amp; match as many as you like!</p>
+  <button class="btn-recommend" onclick="recommend()">🍭 Find My Sweet Treat!</button>
+  <div class="error-msg" id="error-msg"></div>
+  <div class="dots">· · ·</div>
+
+  <div class="card" id="result-card">
+    <h2>🎀 Your Sweet Treat Recommendation</h2>
+    <div class="treat-name" id="treat-name"></div>
+    <div class="treat-desc" id="treat-desc"></div>
+    <div class="treat-tags" id="treat-tags"></div>
+  </div>
+
+  <footer>Made with 💗 for Adri</footer>
+</div>
+
+<script>
+const treats = [
+  { name:"Tarte Tatin 🥧🍎🇫🇷", country:"france", types:["tart","pastry"], flavors:["buttery","caramel","fruity","sweet"], desc:"A legendary upside-down caramelized apple tart from the Loire Valley, with buttery flaky pastry crowned by glossy, jammy apples that melt on your tongue." },
+  { name:"Crème Brûlée 🍮🔥🇫🇷", country:"france", types:["custard"], flavors:["creamy","vanilla","sweet","caramel"], desc:"Silky-smooth vanilla custard hiding beneath a paper-thin shell of crackling caramelized sugar — the most satisfying crack in all of dessert." },
+  { name:"Macaron 🌸🇫🇷", country:"france", types:["macaron","cookie"], flavors:["sweet","creamy","floral"], desc:"Delicate almond meringue shells in every pastel shade imaginable, sandwiched around luscious ganache or buttercream — dainty, dreamy, and utterly Parisian." },
+  { name:"Chocolate Éclair ⚡🍫🇫🇷", country:"france", types:["eclair","pastry"], flavors:["chocolatey","creamy","sweet"], desc:"A pillowy choux pastry shell filled with velvety chocolate pastry cream and draped in a shiny dark chocolate glaze — elegant and indulgent in equal measure." },
+  { name:"Croissant 🥐🧈🇫🇷", country:"france", types:["croissant","pastry"], flavors:["buttery","sweet"], desc:"Hundreds of feather-light, shatteringly crisp layers of butter-laminated dough that unfurl into a golden, honeycomb interior — breakfast perfection." },
+  { name:"Madeleine 🍪🌿🇫🇷", country:"france", types:["cookie","cake"], flavors:["buttery","sweet","floral"], desc:"Little shell-shaped sponge cakes kissed with lemon zest and browned butter — soft, pillowy, and impossibly nostalgic with every bite." },
+  { name:"Paris-Brest 🍩🥜🇫🇷", country:"france", types:["pastry","eclair"], flavors:["nutty","creamy","sweet","buttery"], desc:"A stunning choux pastry ring filled with praline mousseline cream and showered in toasted almonds — created to honor the Paris–Brest bicycle race and worth every calorie." },
+  { name:"Pen Patat 🍠🇭🇹", country:"haiti", types:["pudding","pastry"], flavors:["sweet","spiced","coconut"], desc:"Haiti's beloved sweet potato pudding, fragrant with cinnamon, nutmeg, and coconut milk — dense, comforting, and deeply soulful." },
+  { name:"Tablet Kokoye 🥥🍬🇭🇹", country:"haiti", types:["candy"], flavors:["coconut","sweet","caramel"], desc:"Rustic Haitian coconut praline tablets — chewy, golden, and intensely coconutty with a hint of caramel that makes them completely addictive." },
+  { name:"Douce Macoss 🍬🇭🇹", country:"haiti", types:["candy","pastry"], flavors:["sweet","spiced","nutty"], desc:"A traditional Haitian sweet made from peanuts and sugar — crunchy, nutty brittle with warm spices that packs huge flavor into every little piece." },
+  { name:"Bonbon Sirop 🍯🇭🇹", country:"haiti", types:["candy","custard"], flavors:["sweet","caramel","coconut"], desc:"Soft Haitian syrup candies made with coconut and molasses, with a chewy-sweet center that tells the story of the island in every bite." },
+  { name:"Black Forest Cake 🎂🍒🇩🇪", country:"germany", types:["cake"], flavors:["chocolatey","fruity","creamy","sweet"], desc:"Towering layers of dark chocolate sponge soaked in Kirsch, sandwiched with whipped cream and tart cherries — Germany's most dramatic and delicious showstopper." },
+  { name:"Berliner 🍩🇩🇪", country:"germany", types:["donut","pastry"], flavors:["sweet","fruity","creamy"], desc:"A pillowy, deep-fried doughnut filled with raspberry or plum jam and dusted in powdered sugar — the German answer to all of life's problems." },
+  { name:"Baumkuchen 🎂🍯🇩🇪", country:"germany", types:["cake","pastry"], flavors:["buttery","sweet","vanilla"], desc:"The 'King of Cakes' — a tower of thin concentric rings baked layer by layer, yielding a moist, buttery cake with a gorgeous tree-ring cross section." },
+  { name:"Lebkuchen 🍪🌶️🇩🇪", country:"germany", types:["cookie"], flavors:["spiced","sweet","nutty"], desc:"Germany's iconic spiced gingerbread cookies, chewy and fragrant with cinnamon, cardamom, and cloves, often coated in dark chocolate or white icing." },
+  { name:"Tiramisu 🍮☕🇮🇹", country:"italy", types:["pudding","cake"], flavors:["creamy","sweet","chocolatey"], desc:"Espresso-soaked ladyfingers layered between clouds of mascarpone cream and dusted with bitter cocoa — Italy's most romantic dessert, and for very good reason." },
+  { name:"Cannoli 🍮🇮🇹", country:"italy", types:["pastry","custard"], flavors:["creamy","sweet","nutty"], desc:"Crispy fried pastry shells packed with sweetened ricotta studded with pistachios and chocolate chips — Sicily's gift to the world and impossible to eat just one." },
+  { name:"Panna Cotta 🍮🍓🇮🇹", country:"italy", types:["custard","pudding"], flavors:["creamy","vanilla","fruity","sweet"], desc:"Silky Italian cooked cream, barely set and trembling on the spoon, crowned with a ruby strawberry coulis that's as beautiful as it is delicious." },
+  { name:"Matcha Roll Cake 🎂🍵🇯🇵", country:"japan", types:["cake"], flavors:["creamy","sweet","floral"], desc:"A cloud-soft Japanese sponge swirled around whipped cream and perfumed with earthy, vibrant matcha — delicate, elegant, and utterly irresistible." },
+  { name:"Mochi Ice Cream 🍨🇯🇵", country:"japan", types:["icecream","candy"], flavors:["sweet","creamy","floral"], desc:"Pillowy, chewy rice cake wrapped around a ball of cold, creamy ice cream in flavors like strawberry, mango, or black sesame — endlessly fun to eat." },
+  { name:"Taiyaki 🐟🍫🇯🇵", country:"japan", types:["pastry","cake"], flavors:["sweet","chocolatey","creamy"], desc:"Fish-shaped Japanese waffles with a crispy exterior and a warm, gooey filling of red bean paste or chocolate custard — too cute to eat, too delicious not to." },
+  { name:"Dorayaki 🍪🍯🇯🇵", country:"japan", types:["cookie","cake","pastry"], flavors:["sweet","creamy","nutty"], desc:"Two fluffy honey pancakes hugging a generous filling of sweet red bean paste — simple, comforting, and completely beloved across Japan." },
+  { name:"Tres Leches Cake 🎂🥛🇲🇽", country:"mexico", types:["cake"], flavors:["creamy","sweet","vanilla"], desc:"A sponge cake drenched in three kinds of milk until it becomes an almost impossibly moist, pillowy dream topped with clouds of whipped cream." },
+  { name:"Churros 🍩🍫🇲🇽", country:"mexico", types:["pastry","donut"], flavors:["sweet","caramel","chocolatey","spiced"], desc:"Golden, crunchy-outside, airy-inside ridged doughnuts rolled in cinnamon sugar and served with thick, dark chocolate dipping sauce — pure joy on a stick." },
+  { name:"Flan 🍮🇲🇽", country:"mexico", types:["custard"], flavors:["creamy","caramel","vanilla","sweet"], desc:"Silky, jiggly vanilla custard that unmolds in a pool of dark amber caramel — deceptively simple, completely luxurious, and a Mexican table staple." },
+  { name:"Conchas 🍞🌸🇲🇽", country:"mexico", types:["pastry","cake"], flavors:["sweet","vanilla","buttery"], desc:"Pillowy Mexican sweet bread crowned with a crumbly, colorful shell of sugar cookie topping — soft as a cloud and perfect with a café de olla." },
+  { name:"New York Cheesecake 🎂🍋🇺🇸", country:"usa", types:["cake","custard"], flavors:["creamy","tart","sweet","vanilla"], desc:"Dense, rich, and gloriously tangy cream cheese filling on a buttery graham cracker crust — the undisputed king of American desserts." },
+  { name:"Chocolate Chip Cookie 🍪🍫🇺🇸", country:"usa", types:["cookie"], flavors:["chocolatey","sweet","buttery","vanilla"], desc:"Golden-edged, gooey-centered cookies studded with melty pools of dark chocolate — the warm, nostalgic hug that started a global obsession." },
+  { name:"Red Velvet Cake 🎂❤️🇺🇸", country:"usa", types:["cake","cupcake"], flavors:["sweet","creamy","chocolatey"], desc:"Dramatic crimson layers of subtly cocoa-flavored cake swathed in tangy cream cheese frosting — stunning to look at and even better to eat." },
+  { name:"Banana Pudding 🍯🍌🇺🇸", country:"usa", types:["pudding","custard"], flavors:["creamy","sweet","vanilla","fruity"], desc:"Layers of vanilla wafers, fresh banana slices, and lush vanilla pudding piled high with fluffy meringue — Southern comfort food at its finest." },
+  { name:"Fudge Brownie 🍫🇺🇸", country:"usa", types:["brownie"], flavors:["chocolatey","sweet","nutty","caramel"], desc:"Dense, crack-topped squares of pure chocolate intensity with a fudgy, almost molten center — the dark, irresistible answer to every chocolate craving." },
+  { name:"Key Lime Pie 🥧🍋🇺🇸", country:"usa", types:["tart","custard"], flavors:["tart","creamy","sweet","fruity"], desc:"Tangy key lime custard in a buttery graham cracker shell topped with billowy whipped cream — sunshine in every slice, straight from the Florida Keys." },
+  { name:"Belgian Liège Waffle 🧇🍯🇧🇪", country:"belgium", types:["pastry","cake"], flavors:["sweet","buttery","caramel"], desc:"Dense, chewy waffles studded with pearl sugar that caramelizes into crunchy, amber pockets on the outside — utterly addictive eaten straight from a street cart." },
+  { name:"Belgian Chocolate Truffle 🍫🇧🇪", country:"belgium", types:["candy"], flavors:["chocolatey","creamy","sweet","nutty"], desc:"Velvety, melt-instantly ganache centers coated in the finest dark or milk Belgian chocolate — every bite is a lesson in why Belgium rules the chocolate world." },
+  { name:"Sachertorte 🎂🍫🇦🇹", country:"austria", types:["cake"], flavors:["chocolatey","fruity","sweet"], desc:"Vienna's legendary dark chocolate cake with a secret layer of apricot jam and a glossy chocolate glaze — a century-old recipe that remains utterly timeless." },
+  { name:"Apfelstrudel 🥮🍎🇦🇹", country:"austria", types:["pastry","tart"], flavors:["fruity","spiced","buttery","sweet"], desc:"Tissue-thin strudel dough wrapped around tender cinnamon apples, plump raisins, and buttery breadcrumbs — served warm with a snowstorm of powdered sugar." },
+  { name:"Baklava 🍯🥜🇬🇷", country:"greece", types:["pastry"], flavors:["nutty","sweet","floral","spiced"], desc:"Countless layers of paper-thin phyllo, pistachios, and walnuts drenched in honey and rose water syrup — sticky, crunchy, and perfumed with the Eastern Mediterranean." },
+  { name:"Loukoumades 🍩🍯🇬🇷", country:"greece", types:["donut","pastry"], flavors:["sweet","caramel","nutty","spiced"], desc:"Tiny, cloud-light Greek honey donuts — crispy on the outside, airy within, dunked in honey syrup and showered with cinnamon and crushed walnuts." },
+  { name:"Kaab el Ghazal 🌙🥜🇲🇦", country:"morocco", types:["pastry","cookie"], flavors:["nutty","sweet","floral","spiced"], desc:"'Gazelle's horns' — crescent-shaped Moroccan pastries filled with orange blossom-scented almond paste and dusted in snowy powdered sugar; delicate and enchanting." },
+  { name:"Chebakia 🍯🌹🇲🇦", country:"morocco", types:["pastry","cookie"], flavors:["sweet","spiced","nutty","floral"], desc:"Sesame and anise-scented flower-shaped cookies fried golden then bathed in warm honey and rose water — Ramadan's most beloved and aromatic treat." },
+  { name:"Brigadeiro 🍫🍬🇧🇷", country:"brazil", types:["candy"], flavors:["chocolatey","sweet","creamy"], desc:"Brazil's irresistible chocolate fudge balls — condensed milk and cocoa cooked to a glossy, truffle-soft consistency and rolled in chocolate sprinkles; one is never enough." },
+  { name:"Quindim 🍮🌟🇧🇷", country:"brazil", types:["custard","pastry"], flavors:["sweet","coconut","creamy"], desc:"Sunshine-yellow Brazilian custard tarts of egg yolks, sugar, and toasted coconut — glossy, jiggly, and intensely rich with a gorgeous caramelized top." },
+  { name:"Gulab Jamun 🍮🌹🇮🇳", country:"india", types:["pastry","candy"], flavors:["sweet","floral","spiced","caramel"], desc:"Soft, spongy milk-solid dumplings soaked in cardamom and rose water syrup until they're dripping with fragrant sweetness — India's most beloved dessert." },
+  { name:"Mango Kulfi 🍨🥭🇮🇳", country:"india", types:["icecream"], flavors:["creamy","fruity","sweet","spiced"], desc:"Dense, slow-frozen Indian ice cream bursting with fresh mango and perfumed with saffron and cardamom — a rich, tropical escape in every creamy bite." },
+  { name:"Jalebi 🌀🍯🇮🇳", country:"india", types:["candy","pastry"], flavors:["sweet","caramel","spiced","tart"], desc:"Swirling spirals of fermented batter fried to a shattering crisp and dunked in warm saffron syrup — chaotic, gloriously sticky, and completely unforgettable." },
+  { name:"Pastel de Nata 🥧🇵🇹", country:"portugal", types:["tart","custard"], flavors:["creamy","buttery","caramel","vanilla"], desc:"Flaky, caramelized-top egg custard tarts from Lisbon — warm from the oven with a dusting of cinnamon, they are truly one of the world's great pastries." },
+  { name:"Hotteok 🥞🍯🇰🇷", country:"southkorea", types:["pastry","cake"], flavors:["sweet","nutty","spiced","caramel"], desc:"Korean street food pancakes with a crispy exterior and a molten filling of brown sugar, cinnamon, and crushed peanuts — the ultimate winter warm-up treat." },
+  { name:"Bingsu 🍨🍓🇰🇷", country:"southkorea", types:["icecream"], flavors:["sweet","fruity","creamy"], desc:"Fluffy shaved milk ice piled high with sweet red beans, fresh mango, or strawberries — Korea's iconic summer dessert that's as gorgeous as it is refreshing." },
+  { name:"Turkish Delight 🌹🍬🇹🇷", country:"turkey", types:["candy"], flavors:["floral","sweet","nutty"], desc:"Pillowy, jewel-toned squares of rosewater or pomegranate jelly studded with pistachios and rolled in powdered sugar — a taste of the Ottoman palace." },
+  { name:"Künefe 🧀🍯🇹🇷", country:"turkey", types:["pastry","cake"], flavors:["sweet","creamy","nutty","caramel"], desc:"Shredded wheat drenched in butter and syrup, sandwiching a layer of stretchy, melted cheese — served sizzling hot and topped with crushed pistachios; a revelation." },
+];
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => chip.classList.toggle('selected'));
+});
+
+function getSelected(group) {
+  return Array.from(document.querySelectorAll(`.chip.selected[data-group="${group}"]`))
+    .map(c => c.dataset.value);
+}
+
+function recommend() {
+  const types     = getSelected('type');
+  const countries = getSelected('country');
+  const flavors   = getSelected('flavor');
+  const errEl     = document.getElementById('error-msg');
+  errEl.classList.remove('show');
+
+  if (!types.length && !countries.length && !flavors.length) {
+    errEl.textContent = 'Please pick at least one option before getting a recommendation! 🌸';
+    errEl.classList.add('show');
+    return;
+  }
+
+  const scored = treats.map(t => {
+    let score = 0;
+    if (countries.length && countries.includes(t.country)) score += 10;
+    types.forEach(tp   => { if (t.types.includes(tp))   score += 5; });
+    flavors.forEach(fl => { if (t.flavors.includes(fl)) score += 2; });
+    score += Math.random();
+    return { t, score };
+  });
+
+  scored.sort((a, b) => b.score - a.score);
+  const pick = scored[0].t;
+
+  document.getElementById('treat-name').textContent = pick.name;
+  document.getElementById('treat-desc').textContent = pick.desc;
+
+  const tagsEl = document.getElementById('treat-tags');
+  tagsEl.innerHTML = '';
+  pick.flavors.forEach(f => {
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = f;
+    tagsEl.appendChild(tag);
+  });
+
+  const card = document.getElementById('result-card');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+</body>
+</html>
