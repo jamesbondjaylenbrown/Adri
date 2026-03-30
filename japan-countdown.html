@@ -231,6 +231,46 @@
       font-size: 1.1rem;
     }
 
+    /* ── Itinerary highlights ─────────────────────── */
+    .highlights {
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(255,183,197,.55);
+      border-radius: 22px;
+      padding: 1.4rem 1.8rem;
+      max-width: 540px;
+      width: 100%;
+      box-shadow: 0 4px 20px rgba(188,0,45,.08);
+    }
+    .highlights h2 {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 1rem;
+      color: var(--red);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .highlight-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.6rem;
+    }
+    .hi {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,183,197,.18);
+      border: 1px solid rgba(255,183,197,.5);
+      border-radius: 50px;
+      padding: 0.38rem 0.85rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #7a0022;
+      white-space: nowrap;
+    }
+    .hi .hi-icon { font-size: 1rem; }
+
     /* ── Footer ───────────────────────────────────── */
     footer {
       font-size: 0.8rem;
@@ -278,13 +318,15 @@
 
   <div class="sub-title">✈ &nbsp; A Dream Journey &nbsp; ✈</div>
 
+  <div style="font-size: 2.8rem; display: flex; gap: 0.4rem;">💁🏽‍♀️👱🏼‍♂️</div>
+
   <h1>Adri &amp; Tiago's<br /><span>Japan Trip</span><br />Countdown</h1>
 
   <div class="kanji-row">日本旅行まであと</div>
 
   <div class="dest-card">
     <span class="flag">🇯🇵</span>
-    <span>Tokyo &bull; Kyoto &bull; Osaka &bull; Beyond</span>
+    <span>Tokyo &bull; Hakone &bull; Kyoto</span>
   </div>
 
   <div class="petal-row">🌸 🌸 🌸 🌸 🌸</div>
@@ -322,6 +364,20 @@
 
   <div class="trip-date" id="trip-date-label"></div>
 
+  <div class="highlights">
+    <h2>✨ Trip Highlights ✨</h2>
+    <div class="highlight-grid">
+      <div class="hi"><span class="hi-icon">💍</span> Ring Making</div>
+      <div class="hi"><span class="hi-icon">🍣</span> Sushi Eating</div>
+      <div class="hi"><span class="hi-icon">⚾</span> Baseball Game</div>
+      <div class="hi"><span class="hi-icon">📚</span> Bookstores</div>
+      <div class="hi"><span class="hi-icon">♨️</span> Onsen Soak</div>
+      <div class="hi"><span class="hi-icon">🗻</span> Mt. Fuji Views</div>
+      <div class="hi"><span class="hi-icon">⛩️</span> Shrine Hopping</div>
+      <div class="hi"><span class="hi-icon">🌸</span> Cherry Blossoms</div>
+    </div>
+  </div>
+
   <div class="petal-row">🌸 ⛩️ 🗻 🍣 🌸</div>
 
   <footer>Made with 💗 for Adri &amp; Tiago &mdash; Japan awaits!</footer>
@@ -331,7 +387,7 @@
 <script>
   // ── CONFIGURE YOUR TRIP DATE HERE ───────────────────────────
   // Change this to your actual departure date!
-  const TRIP_DATE = new Date('2027-04-01T00:00:00');
+  const TRIP_DATE = new Date('2026-05-13T00:00:00');
   // ────────────────────────────────────────────────────────────
 
   // Show trip date in readable form
