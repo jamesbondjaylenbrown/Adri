@@ -238,7 +238,7 @@
       border: 1.5px solid rgba(255,183,197,.55);
       border-radius: 22px;
       padding: 1.4rem 1.8rem;
-      max-width: 540px;
+      max-width: 580px;
       width: 100%;
       box-shadow: 0 4px 20px rgba(188,0,45,.08);
     }
@@ -248,8 +248,16 @@
       color: var(--red);
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      margin-bottom: 1rem;
+      margin-bottom: 0.4rem;
       text-align: center;
+    }
+    .highlights .tap-hint {
+      text-align: center;
+      font-size: 0.72rem;
+      color: #b06070;
+      margin-bottom: 1rem;
+      opacity: 0.75;
+      font-style: italic;
     }
     .highlight-grid {
       display: grid;
@@ -268,8 +276,90 @@
       font-weight: 600;
       color: #7a0022;
       white-space: nowrap;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
+      user-select: none;
     }
+    .hi:hover {
+      background: rgba(255,183,197,.42);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(188,0,45,.13);
+    }
+    .hi:active { transform: scale(0.96); }
     .hi .hi-icon { font-size: 1rem; }
+
+    /* ── Fast-fact modal ──────────────────────────── */
+    .fact-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(45,0,17,.45);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      animation: fadeIn 0.18s ease;
+    }
+    .fact-overlay.open { display: flex; }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    .fact-card {
+      background: #fff8f5;
+      border: 2px solid rgba(255,183,197,.7);
+      border-radius: 24px;
+      padding: 2rem 1.8rem 1.6rem;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: 0 16px 48px rgba(188,0,45,.2);
+      position: relative;
+      animation: slideUp 0.22s ease;
+      text-align: center;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fact-close {
+      position: absolute;
+      top: 0.8rem;
+      right: 1rem;
+      font-size: 1.3rem;
+      color: #c07080;
+      cursor: pointer;
+      line-height: 1;
+      background: none;
+      border: none;
+      padding: 0.2rem 0.4rem;
+    }
+    .fact-close:hover { color: var(--red); }
+    .fact-icon { font-size: 2.4rem; margin-bottom: 0.5rem; display: block; }
+    .fact-title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 1.15rem;
+      color: var(--red);
+      margin-bottom: 0.75rem;
+      font-weight: 700;
+    }
+    .fact-body {
+      font-size: 0.92rem;
+      color: #4a1020;
+      line-height: 1.7;
+    }
+    .fact-tag {
+      display: inline-block;
+      margin-top: 1rem;
+      background: rgba(255,183,197,.3);
+      border-radius: 50px;
+      padding: 0.22rem 0.75rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--red);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
 
     /* ── Footer ───────────────────────────────────── */
     footer {
@@ -366,15 +456,37 @@
 
   <div class="highlights">
     <h2>✨ Trip Highlights ✨</h2>
-    <div class="highlight-grid">
-      <div class="hi"><span class="hi-icon">💍</span> Ring Making</div>
-      <div class="hi"><span class="hi-icon">🍣</span> Sushi Eating</div>
-      <div class="hi"><span class="hi-icon">⚾</span> Baseball Game</div>
-      <div class="hi"><span class="hi-icon">📚</span> Bookstores</div>
-      <div class="hi"><span class="hi-icon">♨️</span> Onsen Soak</div>
-      <div class="hi"><span class="hi-icon">🗻</span> Mt. Fuji Views</div>
-      <div class="hi"><span class="hi-icon">⛩️</span> Shrine Hopping</div>
-      <div class="hi"><span class="hi-icon">🌸</span> Cherry Blossoms</div>
+    <p class="tap-hint">tap any highlight for a fast fact</p>
+    <div class="highlight-grid" id="highlight-grid">
+      <div class="hi" data-key="rings"><span class="hi-icon">💍</span> Ring Making</div>
+      <div class="hi" data-key="sushi"><span class="hi-icon">🍣</span> Sushi</div>
+      <div class="hi" data-key="baseball"><span class="hi-icon">⚾</span> Baseball</div>
+      <div class="hi" data-key="books"><span class="hi-icon">📚</span> Bookstores</div>
+      <div class="hi" data-key="onsen"><span class="hi-icon">♨️</span> Onsen</div>
+      <div class="hi" data-key="fuji"><span class="hi-icon">🗻</span> Mt. Fuji</div>
+      <div class="hi" data-key="shrines"><span class="hi-icon">⛩️</span> Shrines</div>
+      <div class="hi" data-key="teamlab"><span class="hi-icon">🎨</span> TeamLab</div>
+      <div class="hi" data-key="blackeggs"><span class="hi-icon">🥚</span> Black Eggs</div>
+      <div class="hi" data-key="boat"><span class="hi-icon">⛴️</span> Boat Trip</div>
+      <div class="hi" data-key="jazz"><span class="hi-icon">🎵</span> Jazz & Soul</div>
+      <div class="hi" data-key="asakusa"><span class="hi-icon">🏮</span> Asakusa</div>
+      <div class="hi" data-key="shibuya"><span class="hi-icon">🌊</span> Shibuya Crossing</div>
+      <div class="hi" data-key="tea"><span class="hi-icon">🍵</span> Tea Ceremony</div>
+      <div class="hi" data-key="sumo"><span class="hi-icon">🤼</span> Sumo</div>
+      <div class="hi" data-key="ghibli"><span class="hi-icon">🐱</span> Ghibli Museum</div>
+      <div class="hi" data-key="tsukiji"><span class="hi-icon">🐟</span> Tsukiji Market</div>
+      <div class="hi" data-key="incense"><span class="hi-icon">🪔</span> Incense Making</div>
+    </div>
+  </div>
+
+  <!-- Fast-fact modal -->
+  <div class="fact-overlay" id="fact-overlay">
+    <div class="fact-card" id="fact-card">
+      <button class="fact-close" id="fact-close">✕</button>
+      <span class="fact-icon" id="fact-icon"></span>
+      <div class="fact-title" id="fact-title"></div>
+      <div class="fact-body" id="fact-body"></div>
+      <span class="fact-tag" id="fact-tag"></span>
     </div>
   </div>
 
@@ -421,6 +533,51 @@
 
   tick();
   setInterval(tick, 1000);
+
+  // ── Fast facts ──────────────────────────────────────────────
+  const facts = {
+    rings:     { icon:'💍', title:'Ring Making — Asakusa', tag:'Tokyo · May 17', body:'In a tiny workshop in Asakusa you\'ll hammer and shape your own silver rings from scratch. The whole process takes about 90 minutes and you leave wearing them — a pretty perfect souvenir.' },
+    sushi:     { icon:'🍣', title:'Sushi', tag:'Tokyo & Kyoto', body:'Japan has more Michelin-starred restaurants than any other country on Earth. Whether it\'s kaiten-zushi (conveyor belt) or a hushed omakase counter, the fish in Tokyo\'s Tsukiji neighbourhood is as fresh as it gets.' },
+    baseball:  { icon:'⚾', title:'Baseball at Tokyo Dome', tag:'Tokyo · May 16', body:'Tokyo Dome holds 55,000 fans and the atmosphere is like nothing else — organised chants, cheerleader squads, and beer vendors walking the aisles with kegs strapped to their backs. Tiago\'s day pick!' },
+    books:     { icon:'📚', title:'Bookstores', tag:'Tokyo', body:'Daikanyama Tsutaya Books is open until 2 am, set in a bamboo-lined complex with a Starbucks inside. Then there\'s the Haruki Murakami Library at Waseda University — a spiral bookcase staircase straight out of a novel.' },
+    onsen:     { icon:'♨️', title:'Onsen Soak', tag:'Hakone · May 18–20', body:'Your hotel Yushintei sits on a volcanic hot spring. Hakone\'s waters are rich in sulfur and minerals that soften skin instantly. Etiquette: rinse thoroughly before entering, no swimwear, total silence appreciated.' },
+    fuji:      { icon:'🗻', title:'Mt. Fuji Views', tag:'Hakone · May 18–20', body:'From Lake Ashi in Hakone you get the classic postcard view of Fuji reflected in the water. Morning is best — clouds tend to roll in by afternoon. At 3,776 m it\'s Japan\'s highest peak and an active stratovolcano.' },
+    shrines:   { icon:'⛩️', title:'Shrine Hopping', tag:'Tokyo & Kyoto', body:'Meiji Shrine in Tokyo is a forested oasis dedicated to Emperor Meiji — feels miles from the city. In Kyoto, Fushimi Inari has over 10,000 vermillion torii gates winding 4 km up a mountain. Go early to beat the crowds.' },
+    teamlab:   { icon:'🎨', title:'teamLab', tag:'Tokyo', body:'teamLab Borderless or Planets? Both are immersive digital art museums where the installations spill across the floor, walls and ceiling around you. Planets has you literally wade through a shallow mirror pool. Book weeks ahead — it sells out fast.' },
+    blackeggs: { icon:'🥚', title:'Black Eggs of Owakudani', tag:'Hakone', body:'At the volcanic valley of Owakudani, eggs are boiled in sulfuric hot springs turning their shells jet black. Local legend says eating one adds 7 years to your life. The views of Mt. Fuji from up here are spectacular too.' },
+    boat:      { icon:'⛴️', title:'Lake Ashi Cruise', tag:'Hakone', body:'A pirate-ship-style ferry crosses Lake Ashi with Mt. Fuji looming behind it — one of Japan\'s most iconic images. Connects directly to the Hakone Ropeway for even higher views over the volcanic valley.' },
+    jazz:      { icon:'🎵', title:'Jazz & Soul Bars', tag:'Tokyo · May 16', body:'Dug Jazz Café in Shinjuku has been spinning vinyl since 1977 — it\'s tiny, smoky, and perfect. Then Little Soul Cafe in Shimokitazawa is a legendary hip-hop bar. Nas himself has been spotted there. Tiago\'s night.' },
+    asakusa:   { icon:'🏮', title:'Asakusa', tag:'Tokyo · May 17', body:'Tokyo\'s oldest district and Adri\'s day pick. Senso-ji Temple, rickshaw rides, traditional craft shops — and the legendary matcha crème brûlée street snack. The ring-making workshop and incense class are both here too.' },
+    shibuya:   { icon:'🌊', title:'Shibuya Crossing', tag:'Tokyo', body:'The world\'s busiest pedestrian scramble crossing — up to 3,000 people cross simultaneously from all directions when the lights change. Best viewed from above at the Mag\'s Park rooftop or Starbucks overlooking the intersection.' },
+    tea:       { icon:'🍵', title:'Tea Ceremony', tag:'Kyoto', body:'A traditional Japanese tea ceremony (chado) is a meditative ritual that can take up to 4 hours in full — most tourist versions are a beautiful 45-minute introduction. Matcha is whisked to a froth in a ceramic bowl and served with a sweet.' },
+    sumo:      { icon:'🤼', title:'Sumo', tag:'Tokyo', body:'A sumo bout can last just 3 seconds — but the ritual preparation, salt throwing and stomping takes several minutes. Wrestlers eat a high-calorie stew called chankonabe and nap after lunch to gain mass. Evening shows are available in Tokyo.' },
+    ghibli:    { icon:'🐱', title:'Ghibli Museum', tag:'Tokyo', body:'Studio Ghibli\'s museum in Mitaka is like walking into a Miyazaki film — hand-drawn animation cells, a rooftop Robot Soldier, and a cat bus kids can jump in. Tickets sell out weeks in advance and can only be bought in advance online.' },
+    tsukiji:   { icon:'🐟', title:'Tsukiji Market', tag:'Tokyo', body:'The outer market is still very much alive — rows of stalls selling fresh sushi, tamagoyaki egg rolls, and Adri\'s must-have: strawberry mochi. Best visited in the morning. The famous tuna auctions moved to Toyosu but the food here is unbeatable.' },
+    incense:   { icon:'🪔', title:'Incense Making', tag:'Tokyo · May 17', body:'Also in Asakusa on the joint day, this Airbnb experience lets you blend and press your own kneaded incense (nerikoh) using traditional recipes. The scents — sandalwood, clove, plum — have been used in Japanese rituals for over 1,000 years.' },
+  };
+
+  const overlay   = document.getElementById('fact-overlay');
+  const factIcon  = document.getElementById('fact-icon');
+  const factTitle = document.getElementById('fact-title');
+  const factBody  = document.getElementById('fact-body');
+  const factTag   = document.getElementById('fact-tag');
+
+  document.getElementById('highlight-grid').addEventListener('click', e => {
+    const pill = e.target.closest('.hi');
+    if (!pill) return;
+    const f = facts[pill.dataset.key];
+    if (!f) return;
+    factIcon.textContent  = f.icon;
+    factTitle.textContent = f.title;
+    factBody.textContent  = f.body;
+    factTag.textContent   = f.tag;
+    overlay.classList.add('open');
+  });
+
+  function closeModal() { overlay.classList.remove('open'); }
+  document.getElementById('fact-close').addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
   // ── Falling cherry blossom petals ───────────────────────────
   (function() {
